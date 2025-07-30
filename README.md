@@ -33,7 +33,7 @@ This project is a web-based stock analysis tool that uses machine learning to pr
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/stock-analyser.git
+    git clone https://github.com/DankEnigmo/Stock_Portfolio_Analyser
     cd stock-analyser
     ```
 
