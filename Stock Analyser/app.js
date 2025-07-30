@@ -11,9 +11,9 @@ let connectionStatus = "unknown";
 let myStockChart = null;
 
 const formatCurrency = v =>
-  new Intl.NumberFormat("en-US", {
+  new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(v);
@@ -173,8 +173,9 @@ function validatePortfolioForm() {
   if (isNaN(cash) || cash < 0) throw new Error("Valid cash amount required.");
   if (!holdings.length) throw new Error("Add at least one holding.");
   holdings.forEach((h, idx) => {
-    if (!h.ticker || h.ticker.length < 1 || h.ticker.length > 5)
-      throw new Error(`Row ${idx + 1}: invalid ticker.`);
+    // Simple validation - just letters, 1-8 characters
+    if (!h.ticker || h.ticker.length < 1 || h.ticker.length > 8 || !/^[A-Z]+$/.test(h.ticker))
+      throw new Error(`Row ${idx + 1}: invalid ticker. Use letters only (e.g., TCS, RELIANCE)`);
     if (isNaN(h.shares) || h.shares <= 0)
       throw new Error(`Row ${idx + 1}: invalid shares.`);
     if (isNaN(h.purchase_price) || h.purchase_price <= 0)
@@ -182,6 +183,7 @@ function validatePortfolioForm() {
   });
   return { cash, holdings };
 }
+
 
 async function analyzePortfolio(e) {
   e.preventDefault();
@@ -269,28 +271,37 @@ function renderPortfolioResults(r) {
                   <thead>
                     <tr class="text-white border-b border-gray-600">
                       <th class="p-3 text-left">Stock</th>
-                      <th class="p-3 text-right">Allocation %</th>
-                      <th class="p-3 text-right">Investment Amount</th>
-                      <th class="p-3 text-right">Shares to Buy</th>
-                      <th class="p-3 text-right">Current Price</th>
+                      <th class="p-3 text-right">%</th>
+                      <th class="p-3 text-right">Invest (₹)</th>
+                      <th class="p-3 text-right">Shares</th>
+                      <th class="p-3 text-right">CMP (₹)</th>
+                      <th class="p-3 text-right">Target (₹)</th>
+                      <th class="p-3 text-right">Profit (₹)</th>
                     </tr>
                   </thead>
                   <tbody>
                     ${Object.entries(allocDetails)
-                      .sort(([,a], [,b]) => b.percentage - a.percentage)
-                      .map(([ticker, details]) => `
+                      .sort(([, a], [, b]) => b.percentage - a.percentage)
+                      .map(([ticker, d]) => `
                       <tr class="border-b border-gray-700/50 hover:bg-gray-800/30">
                         <td class="p-3 font-semibold text-white">${ticker}</td>
-                        <td class="p-3 text-right text-blue-400 font-semibold">${safeFixed(details.percentage, 1)}%</td>
-                        <td class="p-3 text-right text-green-400 font-semibold">${formatCurrency(details.investment_amount)}</td>
-                        <td class="p-3 text-right text-purple-400">${safeFixed(details.shares_to_buy, 4)}</td>
-                        <td class="p-3 text-right text-gray-300">${formatCurrency(details.current_price)}</td>
-                      </tr>
-                    `).join("")}
+                        <td class="p-3 text-right text-blue-400">${safeFixed(d.percentage, 1)}%</td>
+                        <td class="p-3 text-right text-green-400">${formatCurrency(d.investment_amount)}</td>
+                        <td class="p-3 text-right text-purple-400">${safeFixed(d.shares_to_buy, 4)}</td>
+                        <td class="p-3 text-right text-gray-300">${formatCurrency(d.current_price)}</td>
+                        <td class="p-3 text-right text-yellow-400">${formatCurrency(d.projected_price)}</td>
+                        <td class="p-3 text-right text-green-400 font-semibold">${formatCurrency(d.projected_profit)}</td>
+                      </tr>`).join("")}
                   </tbody>
+                  <tfoot>
+                    <tr class="border-t-2 border-gray-600">
+                      <td class="p-3 font-bold text-white">Total Projected Profit</td>
+                      <td></td><td></td><td></td><td></td><td></td>
+                      <td class="p-3 text-right text-green-400 font-bold">${formatCurrency(r.total_projected_profit)}</td>
+                    </tr>
+                  </tfoot>
                 </table>
-              </div>
-              
+                              
               <div class="mt-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
                 <div class="flex items-center space-x-2 mb-2">
                   <i data-lucide="info" class="w-4 h-4 text-blue-400"></i>
@@ -462,11 +473,11 @@ async function loadTop5() {
 
 function validateStockForm() {
   const t = document.getElementById("stock-ticker").value.trim().toUpperCase();
-  if (!t || t.length < 1 || t.length > 5 || !/^[A-Z]+$/.test(t))
-    throw new Error("Invalid ticker");
+  // Simple validation - just letters
+  if (!t || t.length < 1 || t.length > 8 || !/^[A-Z]+$/.test(t))
+    throw new Error("Invalid ticker. Use letters only (e.g., TCS, RELIANCE)");
   return t;
 }
-
 async function searchStock(e) {
   e.preventDefault();
   try {
@@ -647,7 +658,7 @@ async function testConnection() {
 
 document.addEventListener("DOMContentLoaded", () => {
   lucide.createIcons();
-  addHoldingRow("AAPL", 10, 200);
+  addHoldingRow("TCS", 10, 3500); 
   initScrollAnimations();
   initTickerInputs();
   testConnection();

@@ -14,14 +14,11 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-RESULTS_DIR = Path("results")
-CHARTS_DIR  = RESULTS_DIR / "charts"
-RESULTS_DIR.mkdir(exist_ok=True)
-CHARTS_DIR.mkdir(exist_ok=True)
+
 EPOCHS = 100
 MODELS_DIR = Path("Models")
 MODELS_DIR.mkdir(exist_ok=True)
-TICKERS = ['AAPL', 'MSFT', 'NVDA', 'AMZN', 'GOOG', 'META', 'TSLA']
+TICKERS = ["TCS.NS", "INFY.NS","LT.NS", "RELIANCE.NS","HDFCBANK.NS","ICICIBANK.NS"]
 
 
 def download_data(ticker):
