@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ExpenseXchange AI - Intelligent Financial Tracking</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Lato', sans-serif;
+      background-color: #000000;
+      color: #e0e0e0;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Poppins', sans-serif;
+    }
+    .hero-bg {
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(18, 18, 18, 0.9)), url('https://images.unsplash.com/photo-1642427749670-f20e2e76f8c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    .glass-card:hover {
+      transform: translateY(-10px);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    .primary-btn {
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      transition: all 0.3s ease;
+    }
+    .primary-btn:hover {
+      box-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+    }
+    .secondary-btn {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+    .secondary-btn:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    .section-fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .section-fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .modal-glass {
+        background: rgba(18, 18, 18, 0.9);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .form-input {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .status-indicator {
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        font-weight: 500;
+    }
+    .status-success { background-color: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
+    .status-warning { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .status-error { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .holding-row { background-color: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 8px; margin-bottom: 8px; }
+  </style>
+</head>
+<body class="antialiased">
+
+  <header class="sticky top-0 z-50">
+    <nav class="bg-black/50 backdrop-blur-lg border-b border-gray-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+          <div class="flex items-center space-x-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            <h1 class="text-2xl font-bold text-white">ExpenseXchange AI</h1>
+          </div>
+          <div class="hidden md:flex items-center space-x-8">
+            <a href="#features" class="text-gray-300 hover:text-white transition">Features</a>
+            <a href="#ai-portfolio" class="text-gray-300 hover:text-white transition">Tracker</a>
+            <a href="#about" class="text-gray-300 hover:text-white transition">About</a>
+            <a href="#contact" class="text-gray-300 hover:text-white transition">Contact</a>
+          </div>
+          <div class="hidden md:flex items-center space-x-4">
+            <button onclick="openLoginModal()" class="secondary-btn text-white font-semibold py-2 px-6 rounded-full">Login</button>
+            <a href="#ai-portfolio" class="primary-btn text-white font-semibold py-2 px-6 rounded-full">Get Started</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="hero-bg text-white py-32">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight">Achieve Financial Clarity with AI</h2>
+        <p class="text-lg md:text-xl mb-10 max-w-3xl mx-auto text-gray-300">ExpenseXchange AI intelligently tracks your spending, analyzes market trends, and uncovers insights to help you build wealth and secure your financial future.</p>
+        <a href="#ai-portfolio" class="primary-btn text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg">Launch Tracker</a>
+      </div>
+    </section>
+
+    <section id="features" class="py-24 bg-black/30 section-fade-in">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-4xl font-bold text-center mb-4 text-white">A Smarter Way to Manage Your Money</h2>
+        <p class="text-center text-gray-400 max-w-2xl mx-auto mb-16">Explore the powerful features that make ExpenseXchange AI the ultimate tool for financial control.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="glass-card p-8 rounded-2xl text-center">
+            <i data-lucide="scan-line" class="mx-auto mb-4 h-12 w-12 text-blue-400"></i>
+            <h3 class="text-2xl font-semibold mb-4 text-white">Automated Expense Tracking</h3>
+            <p class="text-gray-400">Connect your accounts or scan receipts. Our AI categorizes transactions automatically, giving you a clear view of where your money goes.</p>
+          </div>
+          <div class="glass-card p-8 rounded-2xl text-center">
+            <i data-lucide="candlestick-chart" class="mx-auto mb-4 h-12 w-12 text-green-400"></i>
+            <h3 class="text-2xl font-semibold mb-4 text-white">Real-Time Stock Insights</h3>
+            <p class="text-gray-400">Access real-time market data, AI-driven sentiment analysis, and predictive forecasts to make smarter investment decisions.</p>
+          </div>
+          <div class="glass-card p-8 rounded-2xl text-center">
+            <i data-lucide="pie-chart" class="mx-auto mb-4 h-12 w-12 text-purple-400"></i>
+            <h3 class="text-2xl font-semibold mb-4 text-white">Personalized Budgets</h3>
+            <p class="text-gray-400">Create intelligent budgets that adapt to your lifestyle. ExpenseXchange AI helps you set goals and provides actionable tips to stay on track.</p>
+          </div>
+          <div class="glass-card p-8 rounded-2xl text-center">
+            <i data-lucide="shield-check" class="mx-auto mb-4 h-12 w-12 text-teal-400"></i>
+            <h3 class="text-2xl font-semibold mb-4 text-white">Portfolio Analysis</h3>
+            <p class="text-gray-400">Get a holistic view of your investment portfolio. We analyze diversification, risk exposure, and performance to guide your strategy.</p>
+          </div>
+          <div class="glass-card p-8 rounded-2xl text-center">
+            <i data-lucide="receipt" class="mx-auto mb-4 h-12 w-12 text-orange-400"></i>
+            <h3 class="text-2xl font-semibold mb-4 text-white">Bill & Subscription Tracking</h3>
+            <p class="text-gray-400">Never miss a payment. ExpenseXchange AI tracks your recurring bills and subscriptions, helping you avoid late fees and cancel unused services.</p>
+          </div>
+          <div class="glass-card p-8 rounded-2xl text-center">
+            <i data-lucide="file-text" class="mx-auto mb-4 h-12 w-12 text-yellow-400"></i>
+            <h3 class="text-2xl font-semibold mb-4 text-white">Tax Optimization</h3>
+            <p class="text-gray-400">Our AI identifies potential tax deductions and strategies like tax-loss harvesting to help you minimize your tax burden effortlessly.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Connection Status Indicator -->
+    <div id="connection-status" class="hidden fixed top-24 left-4 right-4 z-40"></div>
+
+    <section id="ai-portfolio" class="py-24 section-fade-in">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-4xl font-bold text-center mb-10 text-white">AI Portfolio Analyzer</h2>
+        <div class="glass-card p-8 rounded-2xl">
+          <form id="portfolio-form" onsubmit="analyzePortfolio(event)">
+            <div class="mb-6">
+              <label for="ai-cash" class="block text-lg font-medium text-gray-300 mb-2">Available Cash ($)</label>
+              <input type="number" id="ai-cash" class="w-full p-4 rounded-lg form-input text-white" placeholder="e.g., 10000" required min="0" step="0.01">
+            </div>
+            <div class="mb-6">
+              <label class="block text-lg font-medium text-gray-300 mb-2">Current Holdings</label>
+              <div id="wallet-holdings" class="space-y-4">
+                <!-- Dynamic rows will be inserted here -->
+              </div>
+              <button type="button" onclick="addHoldingRow()" class="mt-4 secondary-btn text-white font-semibold py-2 px-4 rounded-lg text-sm flex items-center space-x-2">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>Add Stock</span>
+              </button>
+            </div>
+            <button type="submit" class="primary-btn text-white font-semibold py-4 px-10 rounded-full text-lg shadow-lg w-full">
+              <span id="analyze-btn-text">Analyze Portfolio</span>
+              <div id="analyze-btn-loading" class="hidden flex items-center justify-center space-x-2">
+                <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                <span>Analyzing...</span>
+              </div>
+            </button>
+          </form>
+          <div id="ai-loading" class="text-center text-blue-400 mt-6 hidden">
+            <div class="flex items-center justify-center space-x-3">
+              <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400"></div>
+              <span>Analyzing portfolio, please wait...</span>
+            </div>
+          </div>
+          <div id="ai-error" class="text-center text-red-400 mt-6 hidden"></div>
+          <div id="ai-results" class="mt-10 hidden">
+            <div id="ai-results-content"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ai-stock-search" class="py-24 section-fade-in">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-4xl font-bold text-center mb-10 text-white">Top 5 Stock Forecasts</h2>
+        <div id="top5-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- filled by JS -->
+        </div>
+    
+        <!-- collapse/expand single-stock search -->
+        <details class="glass-card p-6 rounded-2xl mt-12">
+          <summary class="text-white cursor-pointer font-semibold text-lg">Search another stock ↓</summary>
+          <form id="stock-search-form" class="mt-6" onsubmit="searchStock(event)">
+            <div class="flex">
+              <input type="text" id="stock-ticker" class="flex-1 p-4 rounded-l-lg form-input text-white" placeholder="e.g. AMD" required pattern="[A-Za-z]{1,5}">
+              <button type="submit" class="primary-btn text-white font-semibold py-4 px-8 rounded-r-lg">Analyze</button>
+            </div>
+          </form>
+          <div id="stock-loading" class="text-center text-blue-400 mt-6 hidden">Analyzing…</div>
+          <div id="stock-error" class="text-center text-red-400 mt-6 hidden"></div>
+          <div id="stock-details" class="mt-10 hidden">
+            <div id="stock-analysis-content"></div>
+            <div class="mt-6"><canvas id="stock-chart" class="w-full h-96"></canvas></div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="about" class="py-24 bg-black/30 section-fade-in">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center mb-16 text-white">Pioneering the Future of Personal Finance</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h3 class="text-3xl font-semibold text-white mb-4">Our Mission</h3>
+                    <p class="text-gray-400 mb-6">At ExpenseXchange AI, our mission is to democratize financial wellness. We believe that everyone deserves access to powerful, intuitive tools that demystify finance and empower them to make confident decisions. We leverage cutting-edge AI to turn complex data into clear, actionable insights, helping our users navigate their financial journey with ease and precision.</p>
+                    <h3 class="text-3xl font-semibold text-white mb-4">Our Technology</h3>
+                    <p class="text-gray-400">Our platform is built on a foundation of proprietary machine learning models, bank-level security protocols, and real-time data integrations. This allows us to offer predictive forecasting, deep personalization, and robust security that you can trust.</p>
+                </div>
+                <div class="glass-card p-8 rounded-2xl">
+                    <h4 class="text-2xl font-semibold text-white mb-6 text-center">Meet Our Fictional Team</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        <div class="flex items-center space-x-4 cursor-pointer" onclick="openMemberModal('prince')">
+                            <img src="https://placehold.co/80x80/3b82f6/ffffff?text=PY" class="rounded-full" alt="Team member Prince Yadav">
+                            <div>
+                                <h5 class="font-bold text-white">Prince Yadav</h5>
+                                <p class="text-blue-400">CEO & AI Architect</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 cursor-pointer" onclick="openMemberModal('dakshita')">
+                            <img src="https://placehold.co/80x80/8b5cf6/ffffff?text=DJ" class="rounded-full" alt="Team member Dakshita Jindal">
+                            <div>
+                                <h5 class="font-bold text-white">Dakshita Jindal</h5>
+                                <p class="text-purple-400">Head of Product</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 cursor-pointer" onclick="openMemberModal('anshu')">
+                            <img src="https://placehold.co/80x80/34d399/ffffff?text=A" class="rounded-full" alt="Team member Anshu">
+                            <div>
+                                <h5 class="font-bold text-white">Anshu</h5>
+                                <p class="text-teal-400">Lead Data Scientist</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 cursor-pointer" onclick="openMemberModal('sparsh')">
+                            <img src="https://placehold.co/80x80/f472b6/ffffff?text=S" class="rounded-full" alt="Team member Sparsh">
+                            <div>
+                                <h5 class="font-bold text-white">Sparsh</h5>
+                                <p class="text-pink-400">Head of UX/UI Design</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-24 section-fade-in">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold mb-4 text-white">Get in Touch</h2>
+            <p class="text-gray-400 mb-12">Have questions? Our team is here to help.</p>
+            <div class="glass-card p-8 rounded-2xl text-left">
+                <form>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <input type="text" placeholder="Your Name" class="w-full p-4 rounded-lg form-input text-white focus:ring-2 focus:ring-blue-500">
+                        <input type="email" placeholder="Your Email" class="w-full p-4 rounded-lg form-input text-white focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <textarea placeholder="Your Message" rows="5" class="w-full p-4 rounded-lg form-input text-white mb-6 focus:ring-2 focus:ring-blue-500"></textarea>
+                    <button type="button" class="w-full primary-btn text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modals -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
+      <div class="modal-glass p-8 rounded-2xl max-w-md w-full relative">
+        <button onclick="closeModal('loginModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
+        <h3 class="text-3xl font-bold text-white mb-6 text-center">Welcome Back</h3>
+        <form>
+            <div class="space-y-4">
+                <input type="email" placeholder="Email Address" class="w-full p-4 rounded-lg form-input text-white focus:ring-2 focus:ring-blue-500">
+                <input type="password" placeholder="Password" class="w-full p-4 rounded-lg form-input text-white focus:ring-2 focus:ring-blue-500">
+            </div>
+            <button type="button" class="w-full primary-btn text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg mt-6">Login</button>
+            <p class="text-center text-gray-400 mt-4 text-sm">Don't have an account? <a href="#" class="text-blue-400 hover:underline">Sign Up</a></p>
+        </form>
+      </div>
+    </div>
+
+    <div id="memberModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
+        <div class="modal-glass p-8 rounded-2xl max-w-2xl w-full relative">
+            <button onclick="closeModal('memberModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
+            <div id="member-modal-content"></div>
+        </div>
+    </div>
+    
+  </main>
+
+  <footer class="bg-black/50 border-t border-gray-800 py-12 section-fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="flex justify-center space-x-6 mb-6">
+        <a href="#" class="text-gray-500 hover:text-white"><i data-lucide="twitter"></i></a>
+        <a href="#" class="text-gray-500 hover:text-white"><i data-lucide="linkedin"></i></a>
+        <a href="#" class="text-gray-500 hover:text-white"><i data-lucide="instagram"></i></a>
+        <a href="#" class="text-gray-500 hover:text-white"><i data-lucide="facebook"></i></a>
+      </div>
+      <p class="text-gray-400">© 2025 ExpenseXchange AI. All rights reserved.</p>
+      <div class="mt-4 space-x-6">
+        <a href="#" class="text-gray-500 hover:text-white text-sm">Privacy Policy</a>
+        <a href="#" class="text-gray-500 hover:text-white text-sm">Terms of Service</a>
+      </div>
+    </div>
+  </footer>
+
+  
+<script src="app.js"></script>
+</body>
+</html>
