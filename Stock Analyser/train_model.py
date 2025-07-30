@@ -10,9 +10,7 @@ from tensorflow.keras.losses import Huber
 from sklearn.preprocessing import MinMaxScaler
 import optuna
 import logging
-import matplotlib.pyplot as plt
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-import csv, os
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -25,12 +23,6 @@ MODELS_DIR = Path("Models")
 MODELS_DIR.mkdir(exist_ok=True)
 TICKERS = ['AAPL', 'MSFT', 'NVDA', 'AMZN', 'GOOG', 'META', 'TSLA']
 
-METRICS_CSV = RESULTS_DIR / "metrics.csv"
-# create CSV with header if it does not exist
-if not METRICS_CSV.exists():
-    with METRICS_CSV.open("w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["ticker", "MAE", "RMSE", "R2"])
 
 def download_data(ticker):
     df = yf.download(ticker, period="5y")
