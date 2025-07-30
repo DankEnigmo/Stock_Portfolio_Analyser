@@ -142,55 +142,6 @@ def main():
         except Exception as e:
             logging.error(f"Failed on {ticker}: {e}")
             
-def evaluate_and_save(ticker, series, model, best_params):
-    seq_len = best_params["sequence_length"]
-    scaler = MinMaxScaler()
-    data = scaler.fit_transform(series.values.reshape(-1, 1))
-
-    X, y = create_sequences(data, seq_len)
-    X = X.reshape((X.shape[0], X.shape[1], 1))
-
-    split = int(len(X) * 0.8)
-    X_test, y_test = X[split:], y[split:]
-    y_pred = model.predict(X_test, verbose=0).flatten()
-
-    mae  = mean_absolute_error(y_test, y_pred)
-    mse  = mean_squared_error(y_test, y_pred)
-    rmse = np.sqrt(mse)
-    r2   = r2_score(y_test, y_pred)
-
-    # 1. append row to CSV
-    with METRICS_CSV.open("a", newline="") as f:
-        csv.writer(f).writerow([ticker, mae, rmse, r2])
-
-    # 2. save chart
-    plt.figure(figsize=(6, 3))
-    plt.title(f"{ticker} – actual vs predicted log-return (test)")
-    plt.plot(y_test, label="actual")
-    plt.plot(y_pred, label="predicted")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(CHARTS_DIR / f"{ticker}_perf.png", dpi=150)
-    plt.close()
-
-    logging.info("%s | MAE: %.4f | RMSE: %.4f | R2: %.4f | saved", ticker, mae, rmse, r2)
-
-def evaluate_all():
-    for ticker in TICKERS:
-        try:
-            series = download_data(ticker)
-            if series is None or len(series) < 200:
-                continue
-            study = optuna.create_study(direction="minimize")
-            study.optimize(lambda t: objective(t, series), n_trials=1, n_jobs=1)
-            model_path = MODELS_DIR / f"{ticker}.h5"
-            if not model_path.exists():
-                continue
-            model = load_model(model_path)
-            evaluate_and_save(ticker, series, model, study.best_params)
-        except Exception as e:
-            logging.warning("Evaluation failed for %s: %s", ticker, e)
 
 if __name__ == "__main__":
     main()   
-    evaluate_all() 
