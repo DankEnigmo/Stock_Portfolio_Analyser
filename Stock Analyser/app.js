@@ -647,7 +647,7 @@ async function testConnection() {
 
 document.addEventListener("DOMContentLoaded", () => {
   lucide.createIcons();
-  addHoldingRow("AAPL", 10, 150);
+  addHoldingRow("AAPL", 10, 200);
   initScrollAnimations();
   initTickerInputs();
   testConnection();
