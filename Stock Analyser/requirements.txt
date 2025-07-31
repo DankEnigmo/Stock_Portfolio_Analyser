@@ -4,4 +4,4 @@ numpy
 scikit-learn
 tensorflow
 Flask
-Flask-Cors 
+Flask-Cors
